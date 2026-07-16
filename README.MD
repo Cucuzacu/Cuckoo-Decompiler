@@ -6,7 +6,7 @@ The best decompiler in the world!!!
 
 
 
-Did you ever want to decompile something and gave up? Now you won't give up anymore! Cuckoo will use Ghidra to produce C pseudocode and then invokes Qwen-coder to fix that for you. AND it runs directly on you computer, meaning you don't need to purchase the pro plan for 1000$ per month to get 5x more messages! You still need a lot of VRAM for the smartest model tho :/
+Did you ever want to decompile something and gave up? Now you won't give up anymore! Cuckoo will use Ghidra to produce C pseudocode and then invoke Qwen-coder to fix that for you. AND it runs directly on your computer, meaning you don't need to purchase the pro plan for 1000$ per month to get 5x more messages! You still need a lot of VRAM for the smartest model tho :/
 
 
 
