@@ -110,7 +110,7 @@ Here is the pseudo-code (ALL FUNCTIONS):
         "system": system_prompt
     }
 
-    print("[*] Sending codebase to Ollama for global refinement. This may take a moment...")
+    print("[*] Sending codebase to LLM for global refinement. This may take a moment...")
 
     try:
         response = requests.post(OLLAMA_API_URL, json=payload)
