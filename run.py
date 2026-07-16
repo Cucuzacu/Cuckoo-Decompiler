@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import json
 import requests
+import re
 
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
@@ -56,7 +57,6 @@ def run_ghidra_headless(ghidra_path, binary_path, output_json):
     finally:
         shutil.rmtree(temp_project_dir, ignore_errors=True)
 
-
 def refine_with_ollama(json_path, model_name, custom_instructions, output_dir):
     print(f"\n[*] Starting up Ollama with model: {model_name}...")
     
@@ -72,40 +72,30 @@ def refine_with_ollama(json_path, model_name, custom_instructions, output_dir):
     
     combined_code = "\n".join(full_decompiled_input)
 
-    prompt = f"""Analyze this decompiled binary. Here is the entire Ghidra pseudo-code output containing all decompiled functions.
+    prompt = f"""Analyze this decompiled binary. Here is the Ghidra pseudo-code output:
+
+{combined_code}
+
 Please rewrite this pseudo-code into highly readable, clean, and compilable C code.
-Remove the useless boilerplate + compiler generated functions, making sure the program works eaxctly the same and with no syntax errors!
+Remove useless boilerplate and compiler-generated functions.
+Ensure the program works exactly the same way without syntax errors and has NO useless compiler functions that are never called.
 
 USER INSTRUCTIONS: {custom_instructions}
-
-Here is the pseudo-code (ALL FUNCTIONS):
-{combined_code}
 """
 
     system_prompt = (
-        "You must output ONLY a valid JSON object. The object must contain a single key 'content' "
-        "whose value is a string containing the complete, refined C source code (including helper functions, "
-        "global variables, structures, and headers as needed). Do not include markdown blocks, and do not "
-        "provide conversational text outside the JSON."
+        "Reconstruct the provided pseudo-code "
+        "into compilable C code with no syntax errors. Your response must contain only the C code, nothing else. "
+        "Wrap the C code inside a markdown code block using ```c and ```."
     )
-
-    total_chars = len(prompt) + len(system_prompt)
-    estimated_tokens = total_chars // 4
-    required_tokens = estimated_tokens + 4096 
-    num_ctx = 4096
-    while num_ctx < required_tokens:
-        num_ctx *= 2
-    num_ctx = min(num_ctx, 131072) 
-    print(f"[*] Dynamically scaled context window (num_ctx) to: {num_ctx}")
 
     payload = {
         "model": model_name,
         "prompt": prompt,
         "stream": False,
-        "format": "json",
         "options": {
-            "num_ctx": num_ctx,
-            "temperature": 0.1
+            "num_ctx": 131072,
+            "temperature": 0.3
         },
         "system": system_prompt
     }
@@ -117,20 +107,25 @@ Here is the pseudo-code (ALL FUNCTIONS):
         response.raise_for_status()
         
         result = response.json()
-        llm_reply = json.loads(result["response"]) 
+        raw_reply = result.get("response", "")
         
-        content = llm_reply.get("content")
+        code_match = re.search(r"```c(.*?)```", raw_reply, re.DOTALL | re.IGNORECASE)
+        
+        if code_match:
+            content = code_match.group(1).strip()
+        else:
+            content = raw_reply.strip()
 
         if content:
             full_path = os.path.join(output_dir, "decompiled_source.c")
             
             with open(full_path, "w", encoding="utf-8") as out_f:
                 out_f.write("// decompiled by Cuckoo Decompiler\n")
-                out_f.write(content.strip() + "\n")
+                out_f.write(content + "\n")
             
             print(f"[+] Successfully saved reconstructed code to {full_path}!")
         else:
-            print("[-] Error: Response did not contain 'content'.")
+            print("[-] Error: Response was empty.")
             
     except Exception as e:
         print(f"[-] Ollama failed on global refinement: {e}")
@@ -175,7 +170,7 @@ if __name__ == "__main__":
     selected_model = models.get(model_choice, "qwen2.5-coder:7b")
 
     print("\nAny specific decompilation instructions?")
-    print("  (for example: 'Organize graphics functions into src/graphics.c' or 'Create a header file for constants')")
+    print("  (for example: 'Do not add comments')")
     custom_instructions = input("Instructions (Press Enter to skip): ").strip()
     if not custom_instructions:
         custom_instructions = "Rename variables to standard meaningful names and format the code beautifully."
