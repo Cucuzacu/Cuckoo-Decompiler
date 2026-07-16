@@ -38,4 +38,4 @@ Note: you need to have ollama running and you should pull the model before using
 
 
 
-decompiled_source.c is the decompiler's output after feeding it the calc_token binary. It was done using the Fast model, and it works just fine without any human interactions!
+decompiled_source.c is the decompiler's output after feeding it the calc_token binary. It was done using the Fast model, and it works just fine without any human interactions(the main function, not the compiler-generated ones)!
