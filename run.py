@@ -72,9 +72,9 @@ def refine_with_ollama(json_path, model_name, custom_instructions, output_dir):
     
     combined_code = "\n".join(full_decompiled_input)
 
-    prompt = f"""You are analyzing a decompiled binary. Here is the entire Ghidra pseudo-code output containing all decompiled functions.
+    prompt = f"""Analyze this decompiled binary. Here is the entire Ghidra pseudo-code output containing all decompiled functions.
 Please rewrite this pseudo-code into highly readable, clean, and compilable C code.
-Remove the useless boilerplate functions, making sure the program works eaxctly the same!
+Remove the useless boilerplate + compiler generated functions, making sure the program works eaxctly the same and with no syntax errors!
 
 USER INSTRUCTIONS: {custom_instructions}
 
