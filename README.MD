@@ -26,4 +26,5 @@ Note: you need to have ollama running and you should pull the model before using
 
 
 
-decompiled_source.c is the decompiler's output after feeding it the calc_token binary. It was done using the 7B model, and it works just fine without any human interactions!
+decompiled_source.c is the decompiler's output after feeding it the calc_token binary. It was done using the 7B model. Unfortunately it tried to "merge"
+ the 2 loops and messes it up.
