@@ -18,18 +18,6 @@ Just do python3 run.py and follow the instructions...
 
 
 
-Here's an estimation for each model:
-
-1.5B (Fast) \~1.5 gb VRAM, Should run on any basic GPU(including integrated ones).
-
-7B (Standard) \~5.5 gb VRAM, Should run on NVIDIA GTX 1060 / 1660,RTX 3050 (6GB) and some powerful integrated GPUs.
-
-14B (Heavy) \~10 gb VRAM, Should run on NVIDIA RTX 3060 (12GB),RTX 4060 Ti (16GB). It is not recommennded to run this on an integrated GPU.
-
-32B (NASA Supercomputer) \~22 gb VRAM, Should run on NVIDIA RTX 3090 / 4090. Very slow but very powerful. Don't even think of running this on an integrated GPU.
-
-
-
 
 
 Note: you need to have ollama running and you should pull the model before using it.
