@@ -79,6 +79,7 @@ def refine_with_ollama(json_path, model_name, custom_instructions, output_dir):
 Please rewrite this pseudo-code into highly readable, clean, and compilable C code.
 Remove useless boilerplate and compiler-generated functions.
 Ensure the program works exactly the same way without syntax errors and has NO useless compiler functions that are never called.
+Don't try to change the logic in any way, keep the program the same and double check everything before you write the code.
 
 USER INSTRUCTIONS: {custom_instructions}
 """
@@ -95,7 +96,7 @@ USER INSTRUCTIONS: {custom_instructions}
         "stream": False,
         "options": {
             "num_ctx": 131072,
-            "temperature": 0.3
+            "temperature": 0.2
         },
         "system": system_prompt
     }
@@ -173,7 +174,7 @@ if __name__ == "__main__":
     print("  (for example: 'Do not add comments')")
     custom_instructions = input("Instructions (Press Enter to skip): ").strip()
     if not custom_instructions:
-        custom_instructions = "Rename variables to standard meaningful names and format the code beautifully."
+        custom_instructions = "Rename variables to standard meaningful names."
 
     output_json = "raw_ghidra_output.json"
 
